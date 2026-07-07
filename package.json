@@ -1,0 +1,17 @@
+{
+  "name": "cosmic-explorer",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Exoplanet & star explorer — FastAPI + React",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "setup": "npm --prefix ./client install && pip install -e ./server[dev]",
+    "test": "npm --prefix ./client test && cd server && python -m pytest -v",
+    "launch": "concurrently \"npm --prefix ./client run dev\" \"cd server && uvicorn server.main:app --port 8000 --reload\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

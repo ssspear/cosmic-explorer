@@ -1,0 +1,75 @@
+.celestial-card {
+  background: #141728;
+  border: 1px solid #2d3148;
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 600px;
+  animation: card-in 0.25s ease;
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.celestial-card__name {
+  font-size: 1.6rem;
+  color: #d0d8ff;
+  margin-bottom: 0.25rem;
+}
+
+.celestial-card__badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  background: #1e2248;
+  color: #8090d0;
+  margin-bottom: 1rem;
+}
+
+.celestial-card__description {
+  color: #b0b8d0;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.celestial-card__details {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.celestial-card__detail dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #6a7090;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.15rem;
+}
+
+.celestial-card__detail dd {
+  color: #c8d0f0;
+  font-size: 1rem;
+}
+
+.celestial-card__fact {
+  border-left: 3px solid #4050a0;
+  padding-left: 1rem;
+  margin: 0;
+}
+
+.celestial-card__fact p {
+  color: #a0a8c8;
+  font-style: italic;
+  line-height: 1.5;
+}
