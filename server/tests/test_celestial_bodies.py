@@ -21,6 +21,22 @@ def test_list_all_celestial_bodies():
     assert "Betelgeuse" in names
 
 
+def test_list_with_source_nasa_passes_source_through(monkeypatch):
+    """The router forwards ?source=nasa to the service and echoes it back."""
+
+    def _fake_get(source="snapshot"):
+        assert source == "nasa"
+        return [{"name": "Test Planet", "type": "exoplanet"}]
+
+    monkeypatch.setattr(exoplanets, "get_exoplanets", _fake_get)
+    resp = client.get("/api/celestial-bodies", params={"source": "nasa"})
+    assert resp.status_code == 200
+    payload = resp.json()
+    assert payload["source"] == "nasa"
+    names = [b["name"] for b in payload["data"]]
+    assert "Test Planet" in names
+
+
 def test_filter_by_exoplanet():
     resp = client.get("/api/celestial-bodies", params={"body_type": "exoplanet"})
     assert resp.status_code == 200

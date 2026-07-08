@@ -128,6 +128,10 @@ def fetch_from_nasa(limit: int = 40, timeout: float = 20.0) -> list[dict]:
     resp = httpx.get(NASA_TAP_URL, params=params, timeout=timeout)
     resp.raise_for_status()
     rows = resp.json()
+    if not isinstance(rows, list):
+        # A 200 with a non-list body (e.g. a NASA error object) would otherwise
+        # crash on iteration; raise ValueError so get_exoplanets falls back.
+        raise ValueError("Expected a list of exoplanet records from NASA")
     bodies = [normalize(row) for row in rows if row.get("pl_name")]
     return bodies[:limit]
 

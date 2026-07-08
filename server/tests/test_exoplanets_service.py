@@ -109,3 +109,19 @@ def test_empty_nasa_response_falls_back_to_snapshot(monkeypatch):
     monkeypatch.setattr(exoplanets.httpx, "get", lambda *a, **k: _Resp())
     bodies = exoplanets.get_exoplanets(source="nasa")
     assert len(bodies) == len(exoplanets.load_snapshot())
+
+
+def test_non_list_nasa_response_falls_back_to_snapshot(monkeypatch):
+    """A 200 with non-list JSON (e.g. a NASA error object) must not 500."""
+
+    class _Resp:
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {"error": "invalid query"}
+
+    monkeypatch.setattr(exoplanets.httpx, "get", lambda *a, **k: _Resp())
+    bodies = exoplanets.get_exoplanets(source="nasa")
+    # Recovers cleanly via the snapshot rather than crashing on dict iteration.
+    assert len(bodies) == len(exoplanets.load_snapshot())
