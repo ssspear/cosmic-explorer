@@ -27,7 +27,11 @@ SNAPSHOT_PATH = Path(__file__).resolve().parent.parent / "data" / "exoplanets.js
 
 # Cache the live results for a short while so we don't hammer NASA on every hit.
 _CACHE_TTL_SECONDS = 60 * 60
-_cache: dict[str, object] = {"data": None, "fetched_at": 0.0}
+# When a live fetch fails or comes back empty we serve the snapshot, but cache
+# that fallback only briefly — long enough to stop hammering NASA during an
+# outage, short enough to retry the live source within a few minutes.
+_FALLBACK_TTL_SECONDS = 5 * 60
+_cache: dict[str, object] = {"data": None, "fetched_at": 0.0, "ttl": _CACHE_TTL_SECONDS}
 
 
 # Distance cap (parsecs) applied in ADQL to keep the download light while still
@@ -146,14 +150,21 @@ def get_exoplanets(source: str = "snapshot") -> list[dict]:
 
     now = time.monotonic()
     cached = _cache["data"]
-    if cached is not None and now - float(_cache["fetched_at"]) < _CACHE_TTL_SECONDS:
+    if cached is not None and now - float(_cache["fetched_at"]) < float(_cache["ttl"]):
         return cached  # type: ignore[return-value]
 
     try:
         data = fetch_from_nasa()
     except (httpx.HTTPError, ValueError):
-        return load_snapshot()
+        data = []
 
-    _cache["data"] = data
-    _cache["fetched_at"] = now
-    return data
+    # A successful, non-empty fetch is cached for the full TTL. A failure or an
+    # empty response falls back to the snapshot, cached only briefly so we back
+    # off from NASA without serving stale-empty data for an hour.
+    if data:
+        _cache.update(data=data, fetched_at=now, ttl=_CACHE_TTL_SECONDS)
+        return data
+
+    fallback = load_snapshot()
+    _cache.update(data=fallback, fetched_at=now, ttl=_FALLBACK_TTL_SECONDS)
+    return fallback

@@ -76,3 +76,36 @@ def test_get_exoplanets_nasa_falls_back_to_snapshot(monkeypatch):
     bodies = exoplanets.get_exoplanets(source="nasa")
     # Falls back to the bundled snapshot instead of raising.
     assert len(bodies) == len(exoplanets.load_snapshot())
+
+
+def test_nasa_failure_is_cached_to_avoid_repeated_network_hits(monkeypatch):
+    """A failed live fetch should back off, not re-hit NASA on every request."""
+    calls = {"n": 0}
+
+    def _fail(*args, **kwargs):
+        calls["n"] += 1
+        raise httpx.ConnectError("network down")
+
+    monkeypatch.setattr(exoplanets.httpx, "get", _fail)
+    first = exoplanets.get_exoplanets(source="nasa")
+    second = exoplanets.get_exoplanets(source="nasa")
+
+    assert len(first) == len(exoplanets.load_snapshot())
+    assert len(second) == len(exoplanets.load_snapshot())
+    # The second call is served from the cached fallback — NASA is hit once.
+    assert calls["n"] == 1
+
+
+def test_empty_nasa_response_falls_back_to_snapshot(monkeypatch):
+    """An empty (but successful) NASA response must not be served as 'no data'."""
+
+    class _Resp:
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return []
+
+    monkeypatch.setattr(exoplanets.httpx, "get", lambda *a, **k: _Resp())
+    bodies = exoplanets.get_exoplanets(source="nasa")
+    assert len(bodies) == len(exoplanets.load_snapshot())
