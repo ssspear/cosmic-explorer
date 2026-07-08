@@ -1,19 +1,40 @@
 from fastapi.testclient import TestClient
 
 from server.main import app
+from server.services import exoplanets
 
 client = TestClient(app)
+
+EXOPLANET_COUNT = len(exoplanets.load_snapshot())
+STAR_COUNT = 3
 
 
 def test_list_all_celestial_bodies():
     resp = client.get("/api/celestial-bodies")
     assert resp.status_code == 200
-    data = resp.json()["data"]
+    payload = resp.json()
+    data = payload["data"]
     assert isinstance(data, list)
-    assert len(data) == 8
+    assert len(data) == EXOPLANET_COUNT + STAR_COUNT
+    assert payload["source"] == "snapshot"
     names = [b["name"] for b in data]
-    assert "Kepler-22b" in names
     assert "Betelgeuse" in names
+
+
+def test_list_with_source_nasa_passes_source_through(monkeypatch):
+    """The router forwards ?source=nasa to the service and echoes it back."""
+
+    def _fake_get(source="snapshot"):
+        assert source == "nasa"
+        return [{"name": "Test Planet", "type": "exoplanet"}]
+
+    monkeypatch.setattr(exoplanets, "get_exoplanets", _fake_get)
+    resp = client.get("/api/celestial-bodies", params={"source": "nasa"})
+    assert resp.status_code == 200
+    payload = resp.json()
+    assert payload["source"] == "nasa"
+    names = [b["name"] for b in payload["data"]]
+    assert "Test Planet" in names
 
 
 def test_filter_by_exoplanet():
@@ -21,7 +42,7 @@ def test_filter_by_exoplanet():
     assert resp.status_code == 200
     data = resp.json()["data"]
     assert all(b["type"] == "exoplanet" for b in data)
-    assert len(data) == 5
+    assert len(data) == EXOPLANET_COUNT
 
 
 def test_filter_by_star():
@@ -29,10 +50,10 @@ def test_filter_by_star():
     assert resp.status_code == 200
     data = resp.json()["data"]
     assert all(b["type"] == "star" for b in data)
-    assert len(data) == 3
+    assert len(data) == STAR_COUNT
 
 
-def test_get_single_body():
+def test_get_single_star():
     resp = client.get("/api/celestial-bodies/Sirius")
     assert resp.status_code == 200
     body = resp.json()["data"]
@@ -41,10 +62,11 @@ def test_get_single_body():
     assert body["constellation"] == "Canis Major"
 
 
-def test_get_single_body_case_insensitive():
-    resp = client.get("/api/celestial-bodies/sirius")
+def test_get_single_exoplanet_case_insensitive():
+    name = exoplanets.load_snapshot()[0]["name"]
+    resp = client.get(f"/api/celestial-bodies/{name.lower()}")
     assert resp.status_code == 200
-    assert resp.json()["data"]["name"] == "Sirius"
+    assert resp.json()["data"]["name"] == name
 
 
 def test_get_unknown_body():
@@ -55,13 +77,20 @@ def test_get_unknown_body():
 
 
 def test_body_fields():
-    resp = client.get("/api/celestial-bodies/Kepler-22b")
+    name = exoplanets.load_snapshot()[0]["name"]
+    resp = client.get(f"/api/celestial-bodies/{name}")
     body = resp.json()["data"]
     expected_keys = {
         "name",
         "type",
+        "host_star",
         "distance_ly",
         "discovery_year",
+        "discovery_method",
+        "orbital_period_days",
+        "radius_earth",
+        "mass_earth",
+        "equilibrium_temp_k",
         "constellation",
         "description",
         "fun_fact",

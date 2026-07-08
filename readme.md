@@ -27,7 +27,22 @@ server/       FastAPI REST API (pytest, ruff)
 |---|---|
 | `GET /api/celestial-bodies` | List all exoplanets and stars |
 | `GET /api/celestial-bodies?body_type=exoplanet` | Filter by type (`exoplanet` or `star`) |
+| `GET /api/celestial-bodies?source=nasa` | Fetch exoplanets live from NASA (falls back to the snapshot on error) |
 | `GET /api/celestial-bodies/{name}` | Get a single body by name |
+
+## Data
+
+Exoplanet data comes from the [NASA Exoplanet Archive](https://exoplanetarchive.ipac.caltech.edu)
+(the nearest confirmed planets). It is bundled as a snapshot at
+`server/data/exoplanets.json` so the API is fast, deterministic, and works
+offline; `?source=nasa` performs a live query instead. Stars are curated
+locally since the archive catalogs planets, not standalone stars.
+
+Refresh the snapshot from the live archive:
+
+```bash
+python -m server.scripts.refresh_exoplanets [limit]   # run from the repo root
+```
 
 ## Testing
 
