@@ -92,6 +92,11 @@ mass thresholds otherwise; `unknown` only when both are null. Thresholds are nam
 `normalize()` calls `classify()`, so every exoplanet in the API response gains `size_class` and
 `size_class_basis`. This function is the backend testing centerpiece.
 
+**Threshold tuning is data-informed, not upfront:** ship these defensible defaults, then inspect the
+actual size distribution from the broadened sample and adjust boundaries only if the real data shows a
+near-empty or over-full bucket. Caveats to footnote in the UI: gas-giant radius saturates (mass ranks
+giants, not radius), and RV masses are minimums (M·sin i), so the mass-fallback path can under-classify.
+
 ### 3. API shape
 
 `GET /api/celestial-bodies` is unchanged in structure (`{data, source}`) but each exoplanet now
@@ -119,6 +124,9 @@ Always available, legally clean, truthful about being schematic. Real per-planet
   planets not shown — no radius measured") and they remain visible in the companion list. Note:
   `size_class` (color) still uses the hybrid radius-or-mass classification, so every classified
   planet is colored even when it can't be positioned on the current axis.
+  **Deferred (B-roadmap):** a selectable X-axis (e.g. orbital period, which reveals hot-Jupiters and
+  the radius valley in period-space). v1 keeps X fixed to distance to stay legible and avoid
+  reintroducing the flexible-axis scatter that was explicitly not chosen as the centerpiece.
 - **Results list (demoted)** — a compact, filtered list/table synced to filters and selection. Not the
   centerpiece; it is the accessible, findable, mobile-friendly companion to the charts (resolves
   findability, accessibility, occlusion, mobile, and discoverability concerns of a charts-only UI).
