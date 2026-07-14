@@ -125,3 +125,26 @@ def test_non_list_nasa_response_falls_back_to_snapshot(monkeypatch):
     bodies = exoplanets.get_exoplanets(source="nasa")
     # Recovers cleanly via the snapshot rather than crashing on dict iteration.
     assert len(bodies) == len(exoplanets.load_snapshot())
+
+
+def test_normalize_adds_size_class_from_radius():
+    body = exoplanets.normalize({"pl_name": "Big b", "pl_rade": 12.0})
+    assert body["size_class"] == "gas_giant"
+    assert body["size_class_basis"] == "radius"
+
+
+def test_normalize_adds_size_class_from_mass_fallback():
+    body = exoplanets.normalize({"pl_name": "Mid b", "pl_bmasse": 20.0})
+    assert body["size_class"] == "neptune_like"
+    assert body["size_class_basis"] == "mass"
+
+
+def test_normalize_size_class_unknown_when_no_size():
+    body = exoplanets.normalize({"pl_name": "Nothing b"})
+    assert body["size_class"] == "unknown"
+    assert body["size_class_basis"] == "none"
+
+
+def test_build_query_requires_a_size_measure():
+    q = exoplanets.build_query()
+    assert "pl_rade is not null or pl_bmasse is not null" in q

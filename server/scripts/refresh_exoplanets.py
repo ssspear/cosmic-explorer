@@ -16,7 +16,7 @@ from server.services.exoplanets import SNAPSHOT_PATH, fetch_from_nasa
 
 
 def main() -> None:
-    limit = int(sys.argv[1]) if len(sys.argv) > 1 else 40
+    limit = int(sys.argv[1]) if len(sys.argv) > 1 else 500
     bodies = fetch_from_nasa(limit=limit)
     SNAPSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)
     with SNAPSHOT_PATH.open("w", encoding="utf-8") as fh:
