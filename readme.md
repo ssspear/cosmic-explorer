@@ -56,14 +56,14 @@ valley (~1.5-2.0 Earth radii) and the solar system's own planets; see
 The explorer view ties together four coordinated pieces, all driven by the
 same filtered set of bodies:
 
-- A **bar chart** of planet counts per size family; clicking a bar filters
-  the view to that family.
+- A **bar chart** showing how many planets fall into each size family, as a
+  read-only distribution overview.
 - A **distance-vs-size scatter plot** (distance in light-years on a log
   X-axis) with a Y-axis toggle between radius and mass, plus a count of
   planets not shown because they lack a measurement for the selected axis.
 - A **synced results list** that reflects the same filtered/selected set as
   the chart and scatter, with a size-family chip per exoplanet row.
-- A **detail drawer** that opens on selecting a chart bar, scatter point, or
+- A **detail drawer** that opens on selecting a scatter point or a results
   list row, showing the planet's stats alongside a representative artist's
   concept image credited to NASA, ESA, CSA / STScI (Webb) for its size
   family.
