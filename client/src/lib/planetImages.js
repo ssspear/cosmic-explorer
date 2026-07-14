@@ -12,6 +12,6 @@ export function planetImage(sizeClass) {
   if (!file) return null;
   return {
     src: `/planet-types/${file}`,
-    caption: `Artist's concept representative of a ${sizeClassMeta(sizeClass).label} planet (NASA/JPL-Caltech).`,
+    caption: `Artist's concept representative of a ${sizeClassMeta(sizeClass).label} planet (NASA, ESA, CSA / STScI).`,
   };
 }

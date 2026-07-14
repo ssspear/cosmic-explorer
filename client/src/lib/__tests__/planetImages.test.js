@@ -12,4 +12,11 @@ describe('planetImage', () => {
     expect(planetImage('unknown')).toBeNull();
     expect(planetImage(null)).toBeNull();
   });
+
+  it('maps every known size class to its image file', () => {
+    expect(planetImage('rocky').src).toContain('/planet-types/rocky.jpg');
+    expect(planetImage('super_earth').src).toContain('/planet-types/super-earth.jpg');
+    expect(planetImage('neptune_like').src).toContain('/planet-types/neptune.jpg');
+    expect(planetImage('gas_giant').src).toContain('/planet-types/gas-giant.jpg');
+  });
 });

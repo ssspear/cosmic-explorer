@@ -29,4 +29,10 @@ describe('PlanetDetailDrawer', () => {
     fireEvent.click(getByRole('button', { name: /close/i }));
     expect(onClose).toHaveBeenCalled();
   });
+
+  it('shows no image for a non-exoplanet body', () => {
+    const star = { name: 'Sirius', type: 'star', size_class: null, description: 'd', fun_fact: 'f' };
+    const { queryByRole } = render(<PlanetDetailDrawer body={star} onClose={vi.fn()} />);
+    expect(queryByRole('img')).toBeNull();
+  });
 });
