@@ -23,4 +23,19 @@ describe('ResultsList', () => {
     );
     expect(getByRole('button', { name: /sirius/i })).toHaveAttribute('aria-current', 'true');
   });
+
+  it('renders an empty-state message when there are no bodies', () => {
+    const { getByText } = render(
+      <ResultsList bodies={[]} selectedName={null} onSelect={vi.fn()} />
+    );
+    expect(getByText(/no bodies match/i)).toBeInTheDocument();
+  });
+
+  it('shows a size chip for exoplanets but not for stars', () => {
+    const { getByText, queryByText } = render(
+      <ResultsList bodies={bodies} selectedName={null} onSelect={vi.fn()} />
+    );
+    expect(getByText('Super-Earth')).toBeInTheDocument();
+    expect(queryByText('Unknown')).toBeNull();
+  });
 });
