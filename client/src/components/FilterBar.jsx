@@ -1,6 +1,6 @@
 import './FilterBar.css';
 
-function FilterBar({ filters, methods, onChange }) {
+function FilterBar({ filters, methods, onChange, maxDistanceBound = 1000 }) {
   const set = (patch) => onChange({ ...filters, ...patch });
 
   return (
@@ -37,7 +37,7 @@ function FilterBar({ filters, methods, onChange }) {
         <input
           type="range"
           min="1"
-          max="1000"
+          max={maxDistanceBound}
           value={filters.maxDistance}
           onChange={(e) => set({ maxDistance: Number(e.target.value) })}
         />

@@ -7,13 +7,15 @@
 // lightness band PASS, chroma floor PASS, contrast PASS on both surfaces
 // (>= 3:1), worst CVD ΔE 8.9 (floor band 8-12 — legal only with the
 // legend/direct-label secondary encoding a size-class chart must ship).
-export const SIZE_CLASSES = [
-  { key: 'rocky', label: 'Rocky', color: '#3987E5' },
-  { key: 'super_earth', label: 'Super-Earth', color: '#199E70' },
-  { key: 'neptune_like', label: 'Neptune-like', color: '#C68200' },
-  { key: 'gas_giant', label: 'Gas giant', color: '#008300' },
-  { key: 'unknown', label: 'Unknown', color: '#898781' },
-];
+export const SIZE_CLASSES = Object.freeze(
+  [
+    { key: 'rocky', label: 'Rocky', color: '#3987E5' },
+    { key: 'super_earth', label: 'Super-Earth', color: '#199E70' },
+    { key: 'neptune_like', label: 'Neptune-like', color: '#C68200' },
+    { key: 'gas_giant', label: 'Gas giant', color: '#008300' },
+    { key: 'unknown', label: 'Unknown', color: '#898781' },
+  ].map((c) => Object.freeze(c))
+);
 
 const BY_KEY = new Map(SIZE_CLASSES.map((c) => [c.key, c]));
 

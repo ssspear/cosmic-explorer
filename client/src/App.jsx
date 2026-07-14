@@ -27,17 +27,44 @@ function App() {
     [bodies]
   );
 
+  // The farthest known distance among loaded bodies bounds the slider so it
+  // has no dead travel; falls back to the original 1000 ly ceiling before
+  // data has loaded.
+  const maxDistanceBound = useMemo(() => {
+    const distances = bodies.map((b) => b.distance_ly).filter((d) => d != null);
+    return distances.length === 0 ? 1000 : Math.ceil(Math.max(...distances));
+  }, [bodies]);
+
+  // Clamp the filter's maxDistance to the current bound so the default state
+  // (maxDistance: 1000) shows every planet once the real, usually-smaller,
+  // bound is known, and so a stale value from a previous dataset can't hide
+  // bodies that are now in range.
+  const effectiveFilters = useMemo(
+    () => ({
+      ...filters,
+      maxDistance: Math.min(filters.maxDistance, maxDistanceBound),
+    }),
+    [filters, maxDistanceBound]
+  );
+
   const filteredBodies = useMemo(
     () =>
       bodies.filter((b) => {
-        if (filters.type !== 'all' && b.type !== filters.type) return false;
-        if (filters.method !== 'all' && b.discovery_method !== filters.method)
+        if (effectiveFilters.type !== 'all' && b.type !== effectiveFilters.type)
           return false;
-        if (b.distance_ly != null && b.distance_ly > filters.maxDistance)
+        if (
+          effectiveFilters.method !== 'all' &&
+          b.discovery_method !== effectiveFilters.method
+        )
+          return false;
+        if (
+          b.distance_ly != null &&
+          b.distance_ly > effectiveFilters.maxDistance
+        )
           return false;
         return true;
       }),
-    [bodies, filters]
+    [bodies, effectiveFilters]
   );
 
   const filteredPlanets = useMemo(
@@ -77,9 +104,10 @@ function App() {
       {status === 'ready' && (
         <>
           <FilterBar
-            filters={filters}
+            filters={effectiveFilters}
             methods={methods}
             onChange={setFilters}
+            maxDistanceBound={maxDistanceBound}
           />
           <ul className="app__legend" aria-label="Size family colors">
             {SIZE_CLASSES.filter((c) => c.key !== 'unknown').map((c) => (

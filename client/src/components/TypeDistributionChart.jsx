@@ -16,7 +16,7 @@ export function countByClass(planets) {
   })).filter((c) => c.count > 0);
 }
 
-function TypeDistributionChart({ planets, onSelectClass }) {
+function TypeDistributionChart({ planets }) {
   const counts = countByClass(planets);
 
   if (counts.length === 0) {
@@ -29,11 +29,7 @@ function TypeDistributionChart({ planets, onSelectClass }) {
         <XAxis dataKey="label" tick={{ fontSize: 12 }} />
         <YAxis allowDecimals={false} />
         <Tooltip cursor={{ fillOpacity: 0.1 }} />
-        <Bar
-          dataKey="count"
-          onClick={(d) => onSelectClass?.(d.key)}
-          isAnimationActive={false}
-        >
+        <Bar dataKey="count" isAnimationActive={false}>
           {counts.map((c) => (
             <Cell key={c.key} fill={c.color} />
           ))}

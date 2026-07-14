@@ -11,7 +11,7 @@ function PlanetDetailDrawer({ body, onClose }) {
       </button>
       {image && (
         <figure className="detail-drawer__figure">
-          <img src={image.src} alt={image.caption} loading="lazy" />
+          <img src={image.src} alt="" loading="lazy" />
           <figcaption>{image.caption}</figcaption>
         </figure>
       )}

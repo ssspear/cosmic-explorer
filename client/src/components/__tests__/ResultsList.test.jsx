@@ -21,7 +21,10 @@ describe('ResultsList', () => {
     const { getByRole } = render(
       <ResultsList bodies={bodies} selectedName="Sirius" onSelect={vi.fn()} />
     );
-    expect(getByRole('button', { name: /sirius/i })).toHaveAttribute('aria-current', 'true');
+    expect(getByRole('button', { name: /sirius/i })).toHaveAttribute(
+      'aria-current',
+      'true'
+    );
   });
 
   it('renders an empty-state message when there are no bodies', () => {

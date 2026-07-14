@@ -10,7 +10,9 @@ describe('FilterBar', () => {
     const { getByLabelText } = render(
       <FilterBar filters={base} methods={['Transit']} onChange={onChange} />
     );
-    fireEvent.change(getByLabelText(/type/i), { target: { value: 'exoplanet' } });
+    fireEvent.change(getByLabelText(/type/i), {
+      target: { value: 'exoplanet' },
+    });
     expect(onChange).toHaveBeenCalledWith({ ...base, type: 'exoplanet' });
   });
 
@@ -26,7 +28,9 @@ describe('FilterBar', () => {
     const { getByLabelText } = render(
       <FilterBar filters={base} methods={['Transit']} onChange={onChange} />
     );
-    fireEvent.change(getByLabelText(/discovery method/i), { target: { value: 'Transit' } });
+    fireEvent.change(getByLabelText(/discovery method/i), {
+      target: { value: 'Transit' },
+    });
     expect(onChange).toHaveBeenCalledWith({ ...base, method: 'Transit' });
   });
 
@@ -35,7 +39,9 @@ describe('FilterBar', () => {
     const { getByLabelText } = render(
       <FilterBar filters={base} methods={['Transit']} onChange={onChange} />
     );
-    fireEvent.change(getByLabelText(/max distance/i), { target: { value: '250' } });
+    fireEvent.change(getByLabelText(/max distance/i), {
+      target: { value: '250' },
+    });
     expect(onChange).toHaveBeenCalledWith({ ...base, maxDistance: 250 });
   });
 });

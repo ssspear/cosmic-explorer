@@ -19,6 +19,15 @@ function PlanetScatter({ planets, yMeasure, onYMeasureChange, onSelect }) {
   const plottable = planets.filter(
     (p) => p.distance_ly != null && p[yMeasure] != null
   );
+
+  // Only treat this as the "nothing to show" empty state when there are no
+  // planets at all — if some planets exist but lack the selected Y measure,
+  // keep rendering the chart (with its own omitted-count messaging) rather
+  // than hiding it.
+  if (planets.length === 0 && plottable.length === 0) {
+    return <p className="chart-empty">No planets match your filters.</p>;
+  }
+
   const omitted = planets.length - plottable.length;
   const data = plottable.map((p) => ({
     x: p.distance_ly,

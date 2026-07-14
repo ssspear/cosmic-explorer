@@ -12,13 +12,19 @@ const body = {
 
 describe('PlanetDetailDrawer', () => {
   it('renders the facts card and a representative image', () => {
-    const { getByRole, getByAltText } = render(
+    const { getByRole, getByText, container } = render(
       <PlanetDetailDrawer body={body} onClose={vi.fn()} />
     );
     expect(
       getByRole('heading', { name: /proxima cen b/i })
     ).toBeInTheDocument();
-    expect(getByAltText(/super-earth/i)).toBeInTheDocument();
+    // The image is decorative (empty alt) since the adjacent figcaption
+    // already describes it for screen readers; assert on the caption and
+    // the image's presence/src instead of alt text.
+    expect(getByText(/super-earth/i)).toBeInTheDocument();
+    const img = container.querySelector('img');
+    expect(img.getAttribute('src')).toContain('super-earth');
+    expect(img).toHaveAttribute('alt', '');
   });
 
   it('calls onClose from the close button', () => {
@@ -31,8 +37,16 @@ describe('PlanetDetailDrawer', () => {
   });
 
   it('shows no image for a non-exoplanet body', () => {
-    const star = { name: 'Sirius', type: 'star', size_class: null, description: 'd', fun_fact: 'f' };
-    const { queryByRole } = render(<PlanetDetailDrawer body={star} onClose={vi.fn()} />);
+    const star = {
+      name: 'Sirius',
+      type: 'star',
+      size_class: null,
+      description: 'd',
+      fun_fact: 'f',
+    };
+    const { queryByRole } = render(
+      <PlanetDetailDrawer body={star} onClose={vi.fn()} />
+    );
     expect(queryByRole('img')).toBeNull();
   });
 });
