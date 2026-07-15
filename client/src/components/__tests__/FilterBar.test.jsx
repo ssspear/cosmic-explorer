@@ -13,7 +13,10 @@ describe('FilterBar', () => {
     fireEvent.change(getByLabelText(/type/i), {
       target: { value: 'exoplanet' },
     });
-    expect(onChange).toHaveBeenCalledWith({ ...base, type: 'exoplanet' });
+    expect(onChange.mock.calls[0][0](base)).toEqual({
+      ...base,
+      type: 'exoplanet',
+    });
   });
 
   it('lists provided discovery methods', () => {
@@ -31,7 +34,10 @@ describe('FilterBar', () => {
     fireEvent.change(getByLabelText(/discovery method/i), {
       target: { value: 'Transit' },
     });
-    expect(onChange).toHaveBeenCalledWith({ ...base, method: 'Transit' });
+    expect(onChange.mock.calls[0][0](base)).toEqual({
+      ...base,
+      method: 'Transit',
+    });
   });
 
   it('emits the merged filters with a numeric distance when the range changes', () => {
@@ -42,6 +48,9 @@ describe('FilterBar', () => {
     fireEvent.change(getByLabelText(/max distance/i), {
       target: { value: '250' },
     });
-    expect(onChange).toHaveBeenCalledWith({ ...base, maxDistance: 250 });
+    expect(onChange.mock.calls[0][0](base)).toEqual({
+      ...base,
+      maxDistance: 250,
+    });
   });
 });

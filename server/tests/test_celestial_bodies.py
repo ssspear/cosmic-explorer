@@ -2,6 +2,7 @@ from fastapi.testclient import TestClient
 
 from server.main import app
 from server.services import exoplanets
+from server.services.classification import classify
 
 client = TestClient(app)
 
@@ -80,14 +81,18 @@ def test_exoplanets_have_size_class():
     resp = client.get("/api/celestial-bodies?body_type=exoplanet")
     data = resp.json()["data"]
     assert data, "expected at least one exoplanet"
-    valid = {"rocky", "super_earth", "neptune_like", "gas_giant", "unknown"}
-    assert all(b["size_class"] in valid for b in data)
+    assert all(
+        (b["size_class"], b["size_class_basis"])
+        == classify(b["radius_earth"], b["mass_earth"])
+        for b in data
+    )
 
 
 def test_stars_have_null_size_class():
     resp = client.get("/api/celestial-bodies?body_type=star")
     data = resp.json()["data"]
     assert all(b["size_class"] is None for b in data)
+    assert all(b["size_class_basis"] is None for b in data)
 
 
 def test_body_fields():

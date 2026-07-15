@@ -15,6 +15,10 @@ const Y_LABELS = {
   mass_earth: 'Mass (Earth masses)',
 };
 
+export function scatterPointPlanet(point) {
+  return point?.payload?.planet ?? point?.planet ?? null;
+}
+
 function PlanetScatter({ planets, yMeasure, onYMeasureChange, onSelect }) {
   const plottable = planets.filter(
     (p) => p.distance_ly != null && p[yMeasure] != null
@@ -85,7 +89,10 @@ function PlanetScatter({ planets, yMeasure, onYMeasureChange, onSelect }) {
           <Scatter
             data={data}
             isAnimationActive={false}
-            onClick={(d) => onSelect(d.planet)}
+            onClick={(d) => {
+              const planet = scatterPointPlanet(d);
+              if (planet) onSelect(planet);
+            }}
             shape={(props) => (
               <circle
                 cx={props.cx}

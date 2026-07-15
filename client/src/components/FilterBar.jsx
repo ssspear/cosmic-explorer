@@ -1,7 +1,7 @@
 import './FilterBar.css';
 
 function FilterBar({ filters, methods, onChange, maxDistanceBound = 1000 }) {
-  const set = (patch) => onChange({ ...filters, ...patch });
+  const set = (patch) => onChange((prev) => ({ ...prev, ...patch }));
 
   return (
     <div className="filter-bar">

@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import PlanetScatter from '../PlanetScatter';
+import PlanetScatter, { scatterPointPlanet } from '../PlanetScatter';
 
 const planets = [
   {
@@ -117,5 +117,12 @@ describe('PlanetScatter', () => {
     );
     // b and c have no radius -> 2 omitted, plural
     expect(getByText(/2 planets not shown/i)).toBeInTheDocument();
+  });
+
+  it('extracts the planet from a recharts click argument (payload-first)', () => {
+    const planet = { name: 'X' };
+    expect(scatterPointPlanet({ payload: { planet } })).toBe(planet);
+    expect(scatterPointPlanet({ planet })).toBe(planet);
+    expect(scatterPointPlanet(undefined)).toBeNull();
   });
 });

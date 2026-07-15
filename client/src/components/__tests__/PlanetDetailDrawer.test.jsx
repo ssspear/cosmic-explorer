@@ -44,9 +44,9 @@ describe('PlanetDetailDrawer', () => {
       description: 'd',
       fun_fact: 'f',
     };
-    const { queryByRole } = render(
+    const { container } = render(
       <PlanetDetailDrawer body={star} onClose={vi.fn()} />
     );
-    expect(queryByRole('img')).toBeNull();
+    expect(container.querySelector('img')).toBeNull();
   });
 });
