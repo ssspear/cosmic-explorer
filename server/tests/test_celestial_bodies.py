@@ -82,8 +82,7 @@ def test_exoplanets_have_size_class():
     data = resp.json()["data"]
     assert data, "expected at least one exoplanet"
     assert all(
-        (b["size_class"], b["size_class_basis"])
-        == classify(b["radius_earth"], b["mass_earth"])
+        (b["size_class"], b["size_class_basis"]) == classify(b["radius_earth"], b["mass_earth"])
         for b in data
     )
 
