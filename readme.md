@@ -44,6 +44,38 @@ Refresh the snapshot from the live archive:
 python -m server.scripts.refresh_exoplanets [limit]   # run from the repo root
 ```
 
+## Size-Families Explorer
+
+The client classifies each exoplanet into one of four size families —
+**rocky**, **super-Earth**, **neptune-like**, or **gas giant** — based on
+radius (preferred) with a fallback to mass when radius isn't measured. The
+boundaries are approximate, tunable conventions anchored to the radius
+valley (~1.5-2.0 Earth radii) and the solar system's own planets; see
+`server/services/classification.py` for the exact thresholds and caveats.
+
+The explorer view ties together four coordinated pieces, all driven by the
+same filtered set of bodies:
+
+- A **bar chart** showing how many planets fall into each size family, as a
+  read-only distribution overview.
+- A **distance-vs-size scatter plot** (distance in light-years on a log
+  X-axis) with a Y-axis toggle between radius and mass, plus a count of
+  planets not shown because they lack a measurement for the selected axis.
+- A **synced results list** that reflects the same filtered/selected set as
+  the chart and scatter, with a size-family chip per exoplanet row.
+- A **detail drawer** that opens on selecting a scatter point or a results
+  list row, showing the planet's stats alongside a representative artist's
+  concept image credited to NASA, ESA, CSA / STScI (Webb) for its size
+  family.
+
+The bundled snapshot samples the nearest `SAMPLE_LIMIT = 500` confirmed
+planets that have a radius or mass measurement. Refresh it from the live
+archive with:
+
+```bash
+python -m server.scripts.refresh_exoplanets [limit]   # run from the repo root
+```
+
 ## Testing
 
 ```bash

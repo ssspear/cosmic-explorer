@@ -15,6 +15,8 @@ from pathlib import Path
 
 import httpx
 
+from server.services.classification import classify
+
 NASA_TAP_URL = "https://exoplanetarchive.ipac.caltech.edu/TAP/sync"
 
 # Columns pulled from the "ps" (Planetary Systems) table.
@@ -34,18 +36,18 @@ _FALLBACK_TTL_SECONDS = 5 * 60
 _cache: dict[str, object] = {"data": None, "fetched_at": 0.0, "ttl": _CACHE_TTL_SECONDS}
 
 
-# Distance cap (parsecs) applied in ADQL to keep the download light while still
-# comfortably covering the nearest few dozen systems. Results are ordered by
-# distance and sliced to the requested limit client-side, because the archive's
-# TAP service applies ``top`` before ``order by``.
-_MAX_DISTANCE_PC = 20.0
+# Number of nearest confirmed planets (with a radius or mass) to serve. Results
+# are ordered by distance and sliced to this limit client-side, because the
+# archive's TAP service applies ``top`` before ``order by``.
+SAMPLE_LIMIT = 500
 
 
 def build_query() -> str:
-    """Build the ADQL query for the nearest confirmed exoplanets with a distance."""
+    """ADQL for the nearest confirmed planets that have a radius or a mass."""
     return (
         f"select {_COLUMNS} from ps "
-        f"where default_flag=1 and sy_dist is not null and sy_dist < {_MAX_DISTANCE_PC} "
+        "where default_flag=1 and sy_dist is not null "
+        "and (pl_rade is not null or pl_bmasse is not null) "
         "order by sy_dist asc"
     )
 
@@ -102,6 +104,7 @@ def normalize(row: dict) -> dict:
     radius_earth = _round(row.get("pl_rade"), 2)
     mass_earth = _round(row.get("pl_bmasse"), 2)
     equilibrium_temp_k = _round(row.get("pl_eqt"), 1)
+    size_class, size_class_basis = classify(radius_earth, mass_earth)
 
     return {
         "name": name,
@@ -114,6 +117,8 @@ def normalize(row: dict) -> dict:
         "radius_earth": radius_earth,
         "mass_earth": mass_earth,
         "equilibrium_temp_k": equilibrium_temp_k,
+        "size_class": size_class,
+        "size_class_basis": size_class_basis,
         "constellation": None,
         "description": _build_description(name, host, distance_ly, year, method),
         "fun_fact": _build_fun_fact(
@@ -122,7 +127,7 @@ def normalize(row: dict) -> dict:
     }
 
 
-def fetch_from_nasa(limit: int = 40, timeout: float = 20.0) -> list[dict]:
+def fetch_from_nasa(limit: int = SAMPLE_LIMIT, timeout: float = 20.0) -> list[dict]:
     """Query the live NASA Exoplanet Archive and return normalized bodies."""
     params = {"query": build_query(), "format": "json"}
     resp = httpx.get(NASA_TAP_URL, params=params, timeout=timeout)
