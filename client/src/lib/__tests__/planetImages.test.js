@@ -25,4 +25,13 @@ describe('planetImage', () => {
       '/planet-types/gas-giant.jpg'
     );
   });
+
+  it('prefixes the image src with the Vite base URL', () => {
+    expect(planetImage('rocky').src.startsWith(import.meta.env.BASE_URL)).toBe(
+      true
+    );
+    expect(planetImage('rocky').src).toBe(
+      `${import.meta.env.BASE_URL}planet-types/rocky.jpg`
+    );
+  });
 });
