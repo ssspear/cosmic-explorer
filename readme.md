@@ -2,6 +2,8 @@
 
 Exoplanet & star explorer built with **FastAPI** (Python) and **React 19** (Vite).
 
+**Live demo:** https://ssspear.github.io/cosmic-explorer/
+
 ## Quick start
 
 ```bash
