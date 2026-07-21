@@ -10,7 +10,7 @@
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
 }
-.results-list__row:last-child {
+.results-list li:last-child .results-list__row {
   border-bottom: 0;
 }
 .results-list::-webkit-scrollbar {
