@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { planetImage } from '../planetImages';
 
 describe('planetImage', () => {
@@ -24,5 +24,16 @@ describe('planetImage', () => {
     expect(planetImage('gas_giant').src).toContain(
       '/planet-types/gas-giant.jpg'
     );
+  });
+
+  it('applies the Vite base URL as a prefix to the image src', () => {
+    vi.stubEnv('BASE_URL', '/cosmic-explorer/');
+    try {
+      expect(planetImage('rocky').src).toBe(
+        '/cosmic-explorer/planet-types/rocky.jpg'
+      );
+    } finally {
+      vi.unstubAllEnvs();
+    }
   });
 });

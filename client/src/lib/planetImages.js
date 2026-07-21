@@ -11,7 +11,7 @@ export function planetImage(sizeClass) {
   const file = FILES[sizeClass];
   if (!file) return null;
   return {
-    src: `/planet-types/${file}`,
+    src: `${import.meta.env.BASE_URL}planet-types/${file}`,
     caption: `Artist's concept representative of a ${sizeClassMeta(sizeClass).label} planet (NASA, ESA, CSA / STScI).`,
   };
 }
