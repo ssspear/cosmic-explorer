@@ -33,4 +33,26 @@ describe('LensTabs', () => {
     });
     expect(onChange).toHaveBeenCalledWith('trend');
   });
+
+  it('moves selection to the previous tab with the left arrow key, wrapping from first to last', () => {
+    const onChange = vi.fn();
+    const { getByRole } = render(
+      <LensTabs lenses={lenses} active="size" onChange={onChange} />
+    );
+    fireEvent.keyDown(getByRole('tab', { name: 'Size families' }), {
+      key: 'ArrowLeft',
+    });
+    expect(onChange).toHaveBeenCalledWith('trend');
+  });
+
+  it('moves DOM focus to the newly-active tab on arrow-key nav', () => {
+    const onChange = vi.fn();
+    const { getByRole } = render(
+      <LensTabs lenses={lenses} active="size" onChange={onChange} />
+    );
+    fireEvent.keyDown(getByRole('tab', { name: 'Size families' }), {
+      key: 'ArrowRight',
+    });
+    expect(getByRole('tab', { name: 'Discovery trend' })).toHaveFocus();
+  });
 });

@@ -94,7 +94,8 @@ function App() {
     <div className="app">
       <h1 className="app__title">Cosmic Explorer</h1>
       <p className="app__subtitle">
-        Explore exoplanets by size family across our stellar neighborhood
+        Explore exoplanets across our stellar neighborhood — by size family and
+        by discovery over time
       </p>
 
       {status === 'loading' && <p className="app__state">Loading NASA data…</p>}
@@ -119,9 +120,16 @@ function App() {
             lenses={LENSES}
             active={activeLens}
             onChange={setActiveLens}
+            panelId="lens-panel"
           />
           <div className="app__layout">
-            <div className="app__charts">
+            <div
+              className="app__charts"
+              role="tabpanel"
+              id="lens-panel"
+              aria-labelledby={`lenstab-${activeLens}`}
+              tabIndex={0}
+            >
               {activeLens === 'size' ? (
                 <SizeFamiliesLens
                   planets={filteredPlanets}
