@@ -8,3 +8,7 @@ __pycache__/
 .ruff_cache/
 .vite/
 client/public/celestial-bodies.json
+
+# local scratch / generated (never commit — may hold session keys or build output)
+.superpowers/
+server/build/
