@@ -87,4 +87,29 @@ describe('App', () => {
       queryByRole('heading', { name: /giant b/i })
     ).not.toBeInTheDocument();
   });
+
+  it('switches from the size lens to the discovery-trend lens', async () => {
+    mockFetchOk();
+    const { getByRole, findByRole, queryByRole } = render(<App />);
+    // default lens is Size families
+    expect(await findByRole('tab', { name: /size families/i })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
+    fireEvent.click(getByRole('tab', { name: /discovery trend/i }));
+    expect(getByRole('tab', { name: /discovery trend/i })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
+    // size-families section title (heading) is gone; trend heading present.
+    // Scoped to role: 'heading' rather than a plain text query, since the
+    // still-rendered (now inactive) "Size families" tab button shares the
+    // same text as the section title and would otherwise falsely match.
+    expect(
+      queryByRole('heading', { name: 'Size families' })
+    ).not.toBeInTheDocument();
+    expect(
+      getByRole('heading', { name: 'Discovery trend' })
+    ).toBeInTheDocument();
+  });
 });

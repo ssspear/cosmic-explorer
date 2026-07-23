@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react';
 import FilterBar from './components/FilterBar';
-import TypeDistributionChart from './components/TypeDistributionChart';
-import PlanetScatter from './components/PlanetScatter';
 import ResultsList from './components/ResultsList';
 import PlanetDetailDrawer from './components/PlanetDetailDrawer';
+import LensTabs from './components/LensTabs';
+import SizeFamiliesLens from './components/SizeFamiliesLens';
+import DiscoveryTrendLens from './components/DiscoveryTrendLens';
 import { useCelestialBodies } from './hooks/useCelestialBodies';
-import { SIZE_CLASSES } from './lib/sizeClasses';
 import './App.css';
 
 const api =
@@ -13,11 +13,17 @@ const api =
 
 const DEFAULT_FILTERS = { type: 'all', method: 'all', maxDistance: 1000 };
 
+const LENSES = [
+  { key: 'size', label: 'Size families' },
+  { key: 'trend', label: 'Discovery trend' },
+];
+
 function App() {
   const { status, bodies, reload } = useCelestialBodies(api);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [selected, setSelected] = useState(null);
   const [yMeasure, setYMeasure] = useState('radius_earth');
+  const [activeLens, setActiveLens] = useState('size');
 
   const methods = useMemo(
     () =>
@@ -88,7 +94,8 @@ function App() {
     <div className="app">
       <h1 className="app__title">Cosmic Explorer</h1>
       <p className="app__subtitle">
-        Explore exoplanets by size family across our stellar neighborhood
+        Explore exoplanets across our stellar neighborhood — by size family and
+        by discovery over time
       </p>
 
       {status === 'loading' && <p className="app__state">Loading NASA data…</p>}
@@ -109,32 +116,30 @@ function App() {
             onChange={setFilters}
             maxDistanceBound={maxDistanceBound}
           />
-          <ul className="app__legend" aria-label="Size family colors">
-            {SIZE_CLASSES.filter((c) => c.key !== 'unknown').map((c) => (
-              <li key={c.key}>
-                <span
-                  className="app__legend-swatch"
-                  style={{ background: c.color }}
-                />
-                {c.label}
-              </li>
-            ))}
-          </ul>
+          <LensTabs
+            lenses={LENSES}
+            active={activeLens}
+            onChange={setActiveLens}
+            panelId="lens-panel"
+          />
           <div className="app__layout">
-            <div className="app__charts">
-              <section>
-                <h2 className="app__section-title">Size families</h2>
-                <TypeDistributionChart planets={filteredPlanets} />
-              </section>
-              <section>
-                <h2 className="app__section-title">Distance vs. size</h2>
-                <PlanetScatter
+            <div
+              className="app__charts"
+              role="tabpanel"
+              id="lens-panel"
+              aria-labelledby={`lenstab-${activeLens}`}
+              tabIndex={0}
+            >
+              {activeLens === 'size' ? (
+                <SizeFamiliesLens
                   planets={filteredPlanets}
                   yMeasure={yMeasure}
                   onYMeasureChange={setYMeasure}
                   onSelect={setSelected}
                 />
-              </section>
+              ) : (
+                <DiscoveryTrendLens planets={filteredPlanets} />
+              )}
             </div>
             <div className="app__side">
               <ResultsList
