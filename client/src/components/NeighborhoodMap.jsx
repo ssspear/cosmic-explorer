@@ -40,7 +40,7 @@ function StarDots({ points, onSelect }) {
         }}
       >
         <sphereGeometry args={[0.6, 16, 16]} />
-        <meshStandardMaterial vertexColors />
+        <meshBasicMaterial vertexColors toneMapped={false} />
       </instancedMesh>
       {hovered != null && points[hovered] && (
         <Html
