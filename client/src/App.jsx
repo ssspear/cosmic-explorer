@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { lazy, Suspense, useMemo, useState } from 'react';
 import FilterBar from './components/FilterBar';
 import ResultsList from './components/ResultsList';
 import PlanetDetailDrawer from './components/PlanetDetailDrawer';
@@ -8,6 +8,8 @@ import DiscoveryTrendLens from './components/DiscoveryTrendLens';
 import { useCelestialBodies } from './hooks/useCelestialBodies';
 import './App.css';
 
+const NeighborhoodLens = lazy(() => import('./components/NeighborhoodLens'));
+
 const api =
   import.meta.env.VITE_API_URL || 'http://localhost:8000/api/celestial-bodies';
 
@@ -16,6 +18,7 @@ const DEFAULT_FILTERS = { type: 'all', method: 'all', maxDistance: 1000 };
 const LENSES = [
   { key: 'size', label: 'Size families' },
   { key: 'trend', label: 'Discovery trend' },
+  { key: 'neighborhood', label: 'Neighborhood' },
 ];
 
 function App() {
@@ -94,8 +97,8 @@ function App() {
     <div className="app">
       <h1 className="app__title">Cosmic Explorer</h1>
       <p className="app__subtitle">
-        Explore exoplanets across our stellar neighborhood — by size family and
-        by discovery over time
+        Explore exoplanets across our stellar neighborhood — by size family, by
+        discovery over time, and mapped in 3D
       </p>
 
       {status === 'loading' && <p className="app__state">Loading NASA data…</p>}
@@ -130,15 +133,27 @@ function App() {
               aria-labelledby={`lenstab-${activeLens}`}
               tabIndex={0}
             >
-              {activeLens === 'size' ? (
+              {activeLens === 'size' && (
                 <SizeFamiliesLens
                   planets={filteredPlanets}
                   yMeasure={yMeasure}
                   onYMeasureChange={setYMeasure}
                   onSelect={setSelected}
                 />
-              ) : (
+              )}
+              {activeLens === 'trend' && (
                 <DiscoveryTrendLens planets={filteredPlanets} />
+              )}
+              {activeLens === 'neighborhood' && (
+                <Suspense
+                  fallback={<p className="app__state">Loading 3D map…</p>}
+                >
+                  <NeighborhoodLens
+                    planets={filteredPlanets}
+                    onSelect={setSelected}
+                    selectedName={selectedBody?.name ?? null}
+                  />
+                </Suspense>
               )}
             </div>
             <div className="app__side">

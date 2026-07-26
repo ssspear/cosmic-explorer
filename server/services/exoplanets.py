@@ -20,7 +20,7 @@ from server.services.classification import classify
 NASA_TAP_URL = "https://exoplanetarchive.ipac.caltech.edu/TAP/sync"
 
 # Columns pulled from the "ps" (Planetary Systems) table.
-_COLUMNS = "pl_name,hostname,disc_year,discoverymethod,sy_dist,pl_orbper,pl_rade,pl_bmasse,pl_eqt"
+_COLUMNS = "pl_name,hostname,disc_year,discoverymethod,sy_dist,pl_orbper,pl_rade,pl_bmasse,pl_eqt,ra,dec,st_teff,sy_pnum"
 
 # 1 parsec = 3.26156 light-years.
 PARSEC_TO_LY = 3.26156
@@ -105,12 +105,20 @@ def normalize(row: dict) -> dict:
     mass_earth = _round(row.get("pl_bmasse"), 2)
     equilibrium_temp_k = _round(row.get("pl_eqt"), 1)
     size_class, size_class_basis = classify(radius_earth, mass_earth)
+    ra = _round(row.get("ra"), 5)
+    dec = _round(row.get("dec"), 5)
+    star_temp_k = _round(row.get("st_teff"), 1)
+    planet_count = row.get("sy_pnum")
 
     return {
         "name": name,
         "type": "exoplanet",
         "host_star": host,
         "distance_ly": distance_ly,
+        "ra": ra,
+        "dec": dec,
+        "star_temp_k": star_temp_k,
+        "planet_count": planet_count,
         "discovery_year": year,
         "discovery_method": method,
         "orbital_period_days": orbital_period_days,

@@ -22,4 +22,13 @@ export default [
       'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },
   },
+  {
+    // react-three-fiber renders host elements (mesh, instancedMesh, sphereGeometry, ...)
+    // that aren't real DOM tags, so react/no-unknown-property false-positives on every
+    // three.js prop (args, position, intensity, vertexColors, ...) they carry.
+    files: ['**/components/NeighborhoodMap.jsx'],
+    rules: {
+      'react/no-unknown-property': 'off',
+    },
+  },
 ];

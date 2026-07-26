@@ -13,6 +13,10 @@ SAMPLE_ROW = {
     "pl_rade": None,
     "pl_bmasse": 1.055,
     "pl_eqt": 218.0,
+    "ra": 217.393,
+    "dec": -62.676,
+    "st_teff": 2992.0,
+    "sy_pnum": 1,
 }
 
 
@@ -148,3 +152,19 @@ def test_normalize_size_class_unknown_when_no_size():
 def test_build_query_requires_a_size_measure():
     q = exoplanets.build_query()
     assert "pl_rade is not null or pl_bmasse is not null" in q
+
+
+def test_normalize_exposes_map_fields():
+    body = exoplanets.normalize(SAMPLE_ROW)
+    assert body["ra"] == 217.393
+    assert body["dec"] == -62.676
+    assert body["star_temp_k"] == 2992.0
+    assert body["planet_count"] == 1
+
+
+def test_normalize_map_fields_default_to_none():
+    body = exoplanets.normalize({"pl_name": "Mystery b"})
+    assert body["ra"] is None
+    assert body["dec"] is None
+    assert body["star_temp_k"] is None
+    assert body["planet_count"] is None
