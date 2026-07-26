@@ -114,5 +114,9 @@ def test_body_fields():
         "constellation",
         "description",
         "fun_fact",
+        "ra",
+        "dec",
+        "star_temp_k",
+        "planet_count",
     }
     assert set(body.keys()) == expected_keys
