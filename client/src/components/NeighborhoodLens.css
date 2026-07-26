@@ -1,0 +1,68 @@
+.neighborhood__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.neighborhood__controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.neighborhood__btn {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+}
+
+.neighborhood__btn[aria-pressed='true'] {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.neighborhood__legend-note {
+  color: var(--faint);
+  font-family: var(--mono);
+}
+
+.neighborhood__canvas-wrap {
+  height: 460px;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.neighborhood__canvas-wrap--expanded {
+  height: 640px;
+}
+
+.neighborhood-map__canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.neighborhood-map__tip {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text);
+  background: rgba(11, 13, 23, 0.9);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 0.2rem 0.45rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.neighborhood__omitted {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--faint);
+  margin-top: 0.5rem;
+}
