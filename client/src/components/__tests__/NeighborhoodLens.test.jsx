@@ -21,11 +21,32 @@ const planet = (over = {}) => ({
 });
 
 describe('NeighborhoodLens', () => {
-  it('shows the empty message when nothing is placeable', () => {
+  it('shows the empty message when no planets match', () => {
     const { getByText, queryByTestId } = render(
       <NeighborhoodLens planets={[]} onSelect={vi.fn()} selectedName={null} />
     );
     expect(getByText('No planets match your filters.')).toBeInTheDocument();
+    expect(queryByTestId('map')).not.toBeInTheDocument();
+  });
+
+  it('distinguishes matched-but-unplaceable planets from no matches', () => {
+    const { getByText, queryByText, queryByTestId } = render(
+      <NeighborhoodLens
+        planets={[
+          planet({ name: 'A', ra: null }),
+          planet({ name: 'B', dec: null }),
+        ]}
+        onSelect={vi.fn()}
+        selectedName={null}
+      />
+    );
+    expect(
+      getByText('No matching planets have coordinates for the 3D map.')
+    ).toBeInTheDocument();
+    expect(getByText(/2 not shown/)).toBeInTheDocument();
+    expect(
+      queryByText('No planets match your filters.')
+    ).not.toBeInTheDocument();
     expect(queryByTestId('map')).not.toBeInTheDocument();
   });
 

@@ -93,11 +93,19 @@ describe('neighborhoodPoints', () => {
     expect(points[0].size).toBeGreaterThan(0);
   });
 
-  it('separates same-system planets via jitter', () => {
+  it('separates co-located planets via jitter', () => {
     const { points } = neighborhoodPoints([
       { ...base, name: 'Kepler-x b' },
       { ...base, name: 'Kepler-x c' },
     ]);
     expect(points[0].x).not.toBe(points[1].x);
+  });
+
+  it('places a solitary system at its exact position (no jitter)', () => {
+    const { points } = neighborhoodPoints([{ ...base, name: 'Solo b' }]);
+    const exact = equatorialToXYZ(base.ra, base.dec, base.distance_ly);
+    expect(points[0].x).toBe(exact.x);
+    expect(points[0].y).toBe(exact.y);
+    expect(points[0].z).toBe(exact.z);
   });
 });

@@ -63,7 +63,23 @@ export function systemJitter(planetName) {
   return { dx: comp(1), dy: comp(2), dz: comp(3) };
 }
 
+const positionKey = (planet) =>
+  `${planet.ra}|${planet.dec}|${planet.distance_ly}`;
+
 export function neighborhoodPoints(planets) {
+  // Jitter exists only to separate planets that render at the SAME point (a
+  // multi-planet system). Count placeable planets per position first so we can
+  // leave a solitary system at its exact RA/Dec/distance — jittering a lone
+  // planet would introduce a fake ~0.15 ly/axis offset from its true spot.
+  const positionCounts = new Map();
+  for (const planet of planets) {
+    if (planet.ra == null || planet.dec == null || planet.distance_ly == null) {
+      continue;
+    }
+    const key = positionKey(planet);
+    positionCounts.set(key, (positionCounts.get(key) ?? 0) + 1);
+  }
+
   const points = [];
   let omitted = 0;
   for (const planet of planets) {
@@ -72,7 +88,8 @@ export function neighborhoodPoints(planets) {
       continue;
     }
     const base = equatorialToXYZ(planet.ra, planet.dec, planet.distance_ly);
-    const j = systemJitter(planet.name);
+    const coLocated = positionCounts.get(positionKey(planet)) > 1;
+    const j = coLocated ? systemJitter(planet.name) : { dx: 0, dy: 0, dz: 0 };
     points.push({
       planet,
       x: base.x + j.dx,

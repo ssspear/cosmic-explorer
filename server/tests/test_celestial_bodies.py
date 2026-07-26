@@ -120,3 +120,12 @@ def test_body_fields():
         "planet_count",
     }
     assert set(body.keys()) == expected_keys
+
+
+def test_star_and_planet_bodies_share_field_shape():
+    # Curated stars must carry the same keys as normalized planets so the
+    # combined /api/celestial-bodies response stays a single uniform contract.
+    planet_name = exoplanets.load_snapshot()[0]["name"]
+    planet = client.get(f"/api/celestial-bodies/{planet_name}").json()["data"]
+    star = client.get("/api/celestial-bodies/Sirius").json()["data"]
+    assert set(star.keys()) == set(planet.keys())

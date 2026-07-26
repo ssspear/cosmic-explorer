@@ -22,6 +22,10 @@ function StarDots({ points, onSelect }) {
     });
     mesh.instanceMatrix.needsUpdate = true;
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+    // An InstancedMesh keeps its own bounding sphere for frustum culling; after
+    // moving instances it's stale, which can wrongly cull the whole star cloud
+    // at some camera angles. Recompute it from the new matrices.
+    mesh.computeBoundingSphere();
   }, [points, dummy]);
 
   return (

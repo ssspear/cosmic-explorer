@@ -20,7 +20,22 @@ function NeighborhoodLens({ planets, onSelect, selectedName }) {
   );
 
   if (points.length === 0) {
-    return <p className="chart-empty">No planets match your filters.</p>;
+    // points can be empty two different ways: no planets matched the filters,
+    // or planets matched but none had coordinates to place. Don't conflate them.
+    return (
+      <section className="neighborhood">
+        <p className="chart-empty">
+          {omitted > 0
+            ? 'No matching planets have coordinates for the 3D map.'
+            : 'No planets match your filters.'}
+        </p>
+        {omitted > 0 && (
+          <p className="neighborhood__omitted">
+            {omitted} not shown (no coordinates)
+          </p>
+        )}
+      </section>
+    );
   }
 
   return (
