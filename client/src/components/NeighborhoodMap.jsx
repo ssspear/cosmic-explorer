@@ -40,7 +40,8 @@ function StarDots({ points, onSelect }) {
         }}
       >
         <sphereGeometry args={[0.6, 16, 16]} />
-        <meshBasicMaterial vertexColors toneMapped={false} />
+        {/* No vertexColors: instanceColor (set via setColorAt) drives USE_INSTANCING_COLOR on its own. Adding vertexColors would multiply by a nonexistent per-vertex color attribute → black dots. */}
+        <meshBasicMaterial toneMapped={false} />
       </instancedMesh>
       {hovered != null && points[hovered] && (
         <Html
