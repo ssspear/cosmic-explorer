@@ -29,3 +29,58 @@ export function radiusToDotSize(radiusEarth) {
   const scaled = DOT_SIZE_MIN + Math.log10(1 + radiusEarth) * 1.1;
   return Math.min(DOT_SIZE_MAX, Math.max(DOT_SIZE_MIN, scaled));
 }
+
+const DEG2RAD = Math.PI / 180;
+
+// Standard equatorial (RA/Dec) + distance -> Cartesian. Distance in light-years,
+// so the whole scene is in light-years to match the ring labels.
+export function equatorialToXYZ(raDeg, decDeg, distanceLy) {
+  const ra = raDeg * DEG2RAD;
+  const dec = decDeg * DEG2RAD;
+  const cosDec = Math.cos(dec);
+  return {
+    x: distanceLy * cosDec * Math.cos(ra),
+    y: distanceLy * cosDec * Math.sin(ra),
+    z: distanceLy * Math.sin(dec),
+  };
+}
+
+// Max illustrative spread (light-years) applied to same-position planets so a
+// multi-planet system fans into a visible cluster instead of stacking.
+export const JITTER_LY = 0.15;
+
+// Deterministic per-name offset: a small string hash seeds three pseudo-random
+// components in [-JITTER_LY, JITTER_LY]. Stable across renders/filters.
+export function systemJitter(planetName) {
+  let h = 0;
+  for (let i = 0; i < planetName.length; i += 1) {
+    h = (h * 31 + planetName.charCodeAt(i)) & 0xffffffff;
+  }
+  const comp = (salt) => {
+    const v = Math.sin(h * 0.0001 + salt) * 10000;
+    return (v - Math.floor(v) - 0.5) * 2 * JITTER_LY;
+  };
+  return { dx: comp(1), dy: comp(2), dz: comp(3) };
+}
+
+export function neighborhoodPoints(planets) {
+  const points = [];
+  let omitted = 0;
+  for (const planet of planets) {
+    if (planet.ra == null || planet.dec == null || planet.distance_ly == null) {
+      omitted += 1;
+      continue;
+    }
+    const base = equatorialToXYZ(planet.ra, planet.dec, planet.distance_ly);
+    const j = systemJitter(planet.name);
+    points.push({
+      planet,
+      x: base.x + j.dx,
+      y: base.y + j.dy,
+      z: base.z + j.dz,
+      color: starColor(planet.star_temp_k),
+      size: radiusToDotSize(planet.radius_earth),
+    });
+  }
+  return { points, omitted };
+}
