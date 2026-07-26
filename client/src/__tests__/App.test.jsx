@@ -2,6 +2,12 @@ import { render, waitFor, fireEvent } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import App from '../App';
 
+vi.mock('../components/NeighborhoodLens', () => ({
+  default: ({ planets }) => (
+    <div data-testid="neighborhood-lens">neighborhood:{planets.length}</div>
+  ),
+}));
+
 const bodies = [
   {
     name: 'Rocky b',
@@ -111,5 +117,13 @@ describe('App', () => {
     expect(
       getByRole('heading', { name: 'Discovery trend' })
     ).toBeInTheDocument();
+  });
+
+  it('switches to the lazy-loaded Neighborhood lens', async () => {
+    mockFetchOk();
+    const { getByRole, findByRole, findByTestId } = render(<App />);
+    await findByRole('tab', { name: /size families/i });
+    fireEvent.click(getByRole('tab', { name: 'Neighborhood' }));
+    expect(await findByTestId('neighborhood-lens')).toBeInTheDocument();
   });
 });
